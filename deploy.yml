@@ -1,11 +1,18 @@
 ---
-- name: Despliegue Automatizado - Intranet Municipal
+- name: Despliegue de Código en Intranet Municipal
   hosts: intranet_servers
   tasks:
-    - name: Actualizar dependencias de Node.js
+    - name: Actualizar código fuente desde GitHub
+      git:
+        repo: 'https://github.com/YampierPonceV/muni-intranet.git'
+        dest: /var/www/intranet
+        version: main
+        force: yes
+
+    - name: Instalar dependencias de Node.js
       npm:
         path: /var/www/intranet
         production: yes
 
-    - name: Reiniciar servicio en PM2
+    - name: Reiniciar la aplicación en PM2
       command: pm2 restart intranet-app

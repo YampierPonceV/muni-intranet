@@ -1,26 +1,21 @@
 pipeline {
-    agent none
+    agent any
 
     stages {
         stage('1. Checkout Código') {
-            agent any
             steps {
                 checkout scm
             }
         }
 
-        stage('2. Instalar y Probar') {
-            agent {
-                docker { image 'node:18-alpine' }
-            }
+        stage('2. Probar Código Localmente') {
             steps {
                 sh 'npm install'
                 sh 'npm test'
             }
         }
 
-        stage('3. Despliegue con Ansible') {
-            agent any
+        stage('3. Desplegar en Producción (LXC 103)') {
             steps {
                 sh '''
                 echo "[intranet_servers]\n192.168.20.10 ansible_user=root" > inventory.ini
@@ -32,13 +27,10 @@ pipeline {
 
     post {
         success {
-            echo '¡Despliegue completado con éxito en la Intranet Municipal!'
+            echo '¡Código actualizado y PM2 reiniciado con éxito en la Intranet!'
         }
         failure {
-            echo 'CRÍTICO: El pipeline falló en alguna etapa. Se aborta el despliegue a producción.'
-        }
-        always {
-            cleanWs()
+            echo 'ERROR: Las pruebas fallaron o el despliegue no pudo completarse.'
         }
     }
 }
