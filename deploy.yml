@@ -1,0 +1,11 @@
+---
+- name: Despliegue Automatizado - Intranet Municipal
+  hosts: intranet_servers
+  tasks:
+    - name: Actualizar dependencias de Node.js
+      npm:
+        path: /var/www/intranet
+        production: yes
+
+    - name: Reiniciar servicio en PM2
+      command: pm2 restart intranet-app
